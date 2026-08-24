@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bogreaukratiet — Vedtægter</title>
+<meta name="description" content="Vedtægter for Bogreaukratiet" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: '#f5f0e6',
+          'background-paper': '#faf7f2',
+          foreground: '#1a1a1a',
+          'foreground-muted': '#4a4a4a',
+          border: '#d4c9b8',
+          'border-dark': '#8b7355',
+          accent: '#d97706',
+          'accent-light': '#f59e0b',
+          'accent-dark': '#b45309',
+        },
+        fontFamily: {
+          heading: ['"Playfair Display"', 'Georgia', 'serif'],
+          body: ['Lora', 'Georgia', 'serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body {
+    font-family: 'Lora', Georgia, serif;
+    line-height: 1.7;
+    background: #f5f0e6;
+    color: #1a1a1a;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: 9999;
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #d97706;
+    outline-offset: 2px;
+  }
+
+  .clause-section + .clause-section {
+    border-top: 1px solid #d4c9b8;
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+  }
+  .clause-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .clause-heading .num {
+    color: #d97706;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+  }
+  .clause {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+  .clause .num {
+    flex: 0 0 2.75rem;
+    color: #8b7355;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.2rem;
+  }
+  .clause p { margin: 0; }
+  .sub-list {
+    list-style: none;
+    margin: 0.5rem 0 0.9rem 2.75rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .sub-list li {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .sub-list li .marker {
+    flex: 0 0 2rem;
+    color: #8b7355;
+    font-size: 0.8rem;
+  }
+  .member-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid #d4c9b8;
+    font-size: 0.95rem;
+  }
+  .member-row .role {
+    color: #4a4a4a;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .sig-line {
+    border-top: 1px solid #8b7355;
+    padding-top: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body class="min-h-screen bg-background">
+
+<header class="w-full border-b border-border-dark">
+  <div class="border-b border-border py-2 px-4 text-center">
+    <span class="text-xs uppercase tracking-widest text-foreground-muted">Næste møde: 17. Oktober 2026</span>
+  </div>
+  <div class="py-6 px-4 text-center">
+    <a class="inline-flex flex-col items-center gap-2 group" href="arkiv.html">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
+        <circle cx="26" cy="26" r="25" stroke="#8b7355" stroke-width="1"/>
+        <circle cx="26" cy="26" r="21" stroke="#d4c9b8" stroke-width="1"/>
+        <path d="M26 17c-2.4-1.8-5.6-2.4-9-1.6v15.4c3.4-.8 6.6-.2 9 1.6 2.4-1.8 5.6-2.4 9-1.6V15.4c-3.4-.8-6.6-.2-9 1.6Z" stroke="#d97706" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M26 17v15.4" stroke="#d97706" stroke-width="1.3"/>
+      </svg>
+      <span class="font-heading text-lg tracking-wide">Bogreaukratiet</span>
+    </a>
+  </div>
+  <nav class="border-t border-border py-3 px-4">
+    <div class="max-w-4xl mx-auto flex items-center justify-center gap-8">
+      <a class="text-sm uppercase tracking-widest hover:text-accent transition-colors" href="arkiv.html">Arkiv</a>
+      <a class="text-sm uppercase tracking-widest hover:text-accent transition-colors" href="statistik.html">Statistik</a>
+      <a class="text-sm uppercase tracking-widest text-accent hover:text-accent-dark transition-colors" href="vedtaegter.html">Vedtægter</a>
+      <a class="text-sm uppercase tracking-widest hover:text-accent transition-colors" href="galleri.html">Galleri</a>
+    </div>
+  </nav>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-12">
+  <div class="text-center mb-6">
+    <span class="text-xs uppercase tracking-[0.3em] text-accent font-medium">vedtaget 7. marts 2026</span>
+    <h2 class="text-3xl md:text-4xl mt-2">Vedtægter</h2>
+    <p class="text-sm text-foreground-muted italic mt-2">for Bogreaukratiet</p>
+    <p class="text-xs text-foreground-muted uppercase tracking-widest mt-3">CVR nr. 69 69 69 69 69</p>
+    <div class="mt-6 flex items-center justify-center gap-2">
+      <div class="h-px w-40 bg-border-dark"></div>
+    </div>
+  </div>
+
+  <article class="mt-14">
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">1</span><h3 class="text-lg">Navn og hjemsted</h3></div>
+      <div class="clause"><span class="num">1.1</span><p>Foreningens navn er Bogreaukratiet ("bogklubben").</p></div>
+      <div class="clause"><span class="num">1.2</span><p>Bogklubbens hjemsted er Manor Farm, Willingdon, East Sussex, BN27 3FA England.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">2</span><h3 class="text-lg">Formål</h3></div>
+      <div class="clause"><span class="num">2.1</span><p>Bogklubbens formål er at skabe et skarpt, nysgerrigt og ambitiøst fællesskab, hvor medlemmerne udfordrer hinandens intellekt, perspektiver, læsevaner og seksualitet. Bogklubben skal fungere som et rum, hvor litteraturens finurligheder ikke blot diskuteres, men dissekeres, og hvor samtalen altid søger at skubbe til forståelsen, skærpe blikket og udvide horisonten. Gennem åben dialog, ærlige meningsudvekslinger og en legende tilgang til idéer og hinandens kroppe skal bogklubben styrke medlemmernes evne til at tænke kritisk, nuanceret og med mod på nye indsigter.</p></div>
+      <div class="clause"><span class="num">2.2</span><p>Det er ikke inden for bogklubbens formål at være en performativ bogklub med henblik på at kunne fortælle det til smart-ass typer i en løbeklub på Vesterbro, Schulstad eller Wolt.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">3</span><h3 class="text-lg">Medlemskab</h3></div>
+      <div class="clause"><span class="num">3.1</span><p>Bogklubben består for nuværende af følgende medlemmer:</p></div>
+      <div class="ml-11 mb-4 max-w-lg">
+        <div class="member-row"><span>Gustav Laigaard</span><span class="role">Formand</span></div>
+        <div class="member-row"><span>Julius Emil Skovgaard Davidsen</span><span class="role">Næstformand</span></div>
+        <div class="member-row"><span>Adam Helsted</span><span class="role">Logistik ansvarlig</span></div>
+        <div class="member-row"><span>Frederik Secher</span><span class="role">Kasser</span></div>
+        <div class="member-row"><span>Jakob Lobedanz Witthøfft</span><span class="role">Præst</span></div>
+        <div class="member-row"><span>Mathias Anker Heegaard</span><span class="role">Catering ansvarlig</span></div>
+        <div class="member-row"><span>Oliver Björkroth</span><span class="role">HR-ansvarlig</span></div>
+        <div class="member-row"><span>Philip Blinkenberg Koch</span><span class="role">Advokat</span></div>
+        <div class="member-row"><span>Fede Sander</span><span class="role">Suppleant</span></div>
+      </div>
+      <div class="clause"><span class="num">3.2</span><p>Som nyt medlem kan optage enhver, der har interesse for bogklubbens formål, jf. pkt. 2.1 og som opfylder en eller flere af følgende begivenheder:</p></div>
+      <ul class="sub-list">
+        <li><span class="marker">(i)</span><span>Læser alle bøger skrevet af Dostojevskij inden for en uge</span></li>
+        <li><span class="marker">(ii)</span><span>røvpuler læsefidusen til offentlig skue i minimum 35 minutter, mens vedkommende har en appelsin i munden eller</span></li>
+        <li><span class="marker">(iii)</span><span>citerer hele koranen med tysk accent.</span></li>
+      </ul>
+      <div class="clause"><span class="num">3.3</span><p>Bestyrelsesmedlemmerne og bestyrelsesformanden vælges årligt på bogklubbens ordinære generalforsamling, jf. pkt. 9.1.</p></div>
+      <div class="clause"><span class="num">3.4</span><p>Udover proceduren i pkt. 3.2 kan medlemskab opnås ved indbetaling af et engangsbeløb på DKK 300.000 som tilskud til en bolig i København til bogklubbens intellektuelle og spirituelle leder, advokat Philip Blinkenberg Koch.</p></div>
+      <div class="clause"><span class="num">3.5</span><p>Der kan vælges maksimum 8 medlemmer til bogklubben.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">4</span><h3 class="text-lg">Udtræden som medlem</h3></div>
+      <div class="clause"><span class="num">4.1</span><p>Hvis en af følgende situationer foreligger, skal medlemmet udtræde med øjeblikkelig virkning:</p></div>
+      <ul class="sub-list">
+        <li><span class="marker">(i)</span><span>Medlemmet har ikke læst til næste bestyrelsesmøde.</span></li>
+        <li><span class="marker">(ii)</span><span>Medlemmet har ikke et forslag til en bog på næste bestyrelsesmøde.</span></li>
+        <li><span class="marker">(iii)</span><span>Medlemmet nævner gentagende gange Kim, Christian Martin og andre kollegaer i Wolt; eller</span></li>
+        <li><span class="marker">(iv)</span><span>Medlemmets bogpitch er af en kvalitet under hvad der kan forventes af en rimelig god bogklub.</span></li>
+      </ul>
+      <div class="clause"><span class="num">4.2</span><p>Bogklubbens medlemmer kan med simpelt flertal fra de fremmødte til enhver tid beslutte at frede et medlem som opfylder situationerne i pkt. 4.1.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">5</span><h3 class="text-lg">Valg af bog</h3></div>
+      <div class="clause"><span class="num">5.1</span><p>I løbet af hvert arrangement vælges den næste bog, som klubben skal læse.</p></div>
+      <div class="clause"><span class="num">5.2</span><p>Valget sker ved, at alle medlemmer pitcher én bog hver. Pitch foregår mundtligt på dagen.</p></div>
+      <div class="clause"><span class="num">5.3</span><p>Bogejeren, jf. pkt. 6 er fritaget fra at pitche en bog, men kan frivilligt vælge at gøre dette.</p></div>
+      <div class="clause"><span class="num">5.4</span><p>Efter alle pitch er gennemført, foretages en anonym afstemning blandt medlemmerne.</p></div>
+      <div class="clause"><span class="num">5.5</span><p>Ved stemmelighed afgøres bogvalget ved et kyllingeræs. Her købes to kyllinger i en vilkårlig dyreforretning som skal løbe omkamp mod hinanden. Vinder kyllingen får lov til at vælge en bog og introduceres som medlem til bogklubben.</p></div>
+      <div class="clause"><span class="num">5.6</span><p>Kyllingeræset i pkt. 5.5 kan gennemføres online.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">6</span><h3 class="text-lg">Bogejerens rolle</h3></div>
+      <div class="clause"><span class="num">6.1</span><p>Den person, som har pitchet og fået valgt den bog, der skal læses frem mod et arrangement, jf. pkt. 5, betegnes som bogejer ("Bogejeren").</p></div>
+      <div class="clause"><span class="num">6.2</span><p>Bogejeren har ansvar for at sikre at der udvælges en ny bog efter proceduren i pkt. 8 og, at der afholdes et socialt arrangement efter proceduren i pkt. 7.</p></div>
+      <div class="clause"><span class="num">6.3</span><p>Ved hvert arrangement skal der aftales en dato for næste arrangement.</p></div>
+      <div class="clause"><span class="num">6.4</span><p>Datoen aftales blandt de fremmødte medlemmer.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">7</span><h3 class="text-lg">Socialt arrangement</h3></div>
+      <div class="clause"><span class="num">7.1</span><p>Bogejer har ansvaret for at fastsætte dagsordenen for det pågældende sociale arrangement.</p></div>
+      <div class="clause"><span class="num">7.2</span><p>Arrangementet skal have en klar relation til den bog, som er læst.</p></div>
+      <div class="clause"><span class="num">7.3</span><p>Dagsordenen kan blandt andet omfatte:</p></div>
+      <ul class="sub-list">
+        <li><span class="marker">(i)</span><span>Lokation eller lokationer</span></li>
+        <li><span class="marker">(ii)</span><span>Eventuelt outfit eller tema</span></li>
+        <li><span class="marker">(iii)</span><span>Overordnet struktur for arrangementet</span></li>
+      </ul>
+      <div class="clause"><span class="num">7.4</span><p>Bogejer skal kommunikere dagsordenen til de øvrige medlemmer i rimelig tid inden arrangementet.</p></div>
+      <div class="clause"><span class="num">7.5</span><p>Bogejeren skal sende budgettet til godkendelse til bogklubbens kasser med et varsel på 14 bankdage før datoen for det sociale arrangement.</p></div>
+      <div class="clause"><span class="num">7.6</span><p>Kollektiv planlægning af arrangementets indhold i bogklubbens fælles gruppechat (fx Facebook) er ikke tilladt.</p></div>
+      <div class="clause"><span class="num">7.7</span><p>Uanset pkt. 7.5 må en Bogejer dog gerne:</p></div>
+      <ul class="sub-list">
+        <li><span class="marker">(i)</span><span>søge inspiration hos øvrige medlemmer individuelt</span></li>
+        <li><span class="marker">(ii)</span><span>stille praktiske spørgsmål i gruppechatten vedrørende fx tid, sted og logistik</span></li>
+      </ul>
+      <div class="clause"><span class="num">7.8</span><p>Indholdsmæssige beslutninger og idéudvikling skal forblive hos bogejeren.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">8</span><h3 class="text-lg">Valg af ny bog</h3></div>
+      <div class="clause"><span class="num">8.1</span><p>Ved arrangementet som planlagt af Bogejeren skal der vælges en ny bog.</p></div>
+      <div class="clause"><span class="num">8.2</span><p>Ved hvert arrangement udvælges ét medlem tilfældigt til at foretage en fremlæggelse.</p></div>
+      <div class="clause"><span class="num">8.3</span><p>Indholdet af fremlæggelsen er op til det enkelte medlem.</p></div>
+      <div class="clause"><span class="num">8.4</span><p>Fremlæggelsen kan eksempelvis tage udgangspunkt i:</p></div>
+      <ul class="sub-list">
+        <li><span class="marker">(i)</span><span>Et centralt tema i bogen</span></li>
+        <li><span class="marker">(ii)</span><span>En karakter eller relation</span></li>
+        <li><span class="marker">(iii)</span><span>En konkret scene eller passage</span></li>
+        <li><span class="marker">(iv)</span><span>Bogens nutidige eller personlige relevans</span></li>
+        <li><span class="marker">(v)</span><span>En kritisk eller alternativ fortolkning</span></li>
+        <li><span class="marker">(vi)</span><span>En drukhistorie fra dagen før.</span></li>
+      </ul>
+      <div class="clause"><span class="num">8.5</span><p>Listen er ikke udtømmende og fungerer alene som inspiration.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">9</span><h3 class="text-lg">Generalforsamling</h3></div>
+      <div class="clause"><span class="num">9.1</span><p>Bogklubben holder årligt en ordinær generalforsamling, hvor bestyrelsen konstitueres og rollerne blandt bestyrelsesmedlemmerne fordeles. Generalforsamlingen skal indkaldes med et varsel på 14 bankdage.</p></div>
+      <div class="clause"><span class="num">9.2</span><p>Bogklubben kan, hvis det påkræves af minimum 2/3 af bestyrelsesmedlemmerne, indkalde til ekstraordinær generalforsamling. Generalforsamlingen skal indkaldes med et varsel på 14 bankdage.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">10</span><h3 class="text-lg">Vedtægtsændringer</h3></div>
+      <div class="clause"><span class="num">10.1</span><p>Ændringer af vedtægterne kan kun ske på en generalforsamling og kræver 2/3 flertal af de fremmødte medlemmer.</p></div>
+    </section>
+
+    <section class="clause-section reveal">
+      <div class="clause-heading"><span class="num">11</span><h3 class="text-lg">Opløsning</h3></div>
+      <div class="clause"><span class="num">11.1</span><p>Beslutning om klubbens opløsning kan kun træffes på en ekstraordinær generalforsamling indkaldt med dette formål.</p></div>
+      <div class="clause"><span class="num">11.2</span><p>Ved opløsning tilfalder bogklubbens eventuelle formue en almennyttig forening valgt af generalforsamlingen.</p></div>
+    </section>
+
+  </article>
+
+  <p class="text-center text-sm text-foreground-muted italic mt-16">
+    Vedtaget på foreningens ekstraordinære generalforsamling den 7. marts 2026.
+  </p>
+
+  <div class="reveal grid sm:grid-cols-2 gap-x-12 gap-y-10 mt-16 max-w-xl mx-auto">
+    <div class="sig-line">Gustav Laigaard</div>
+    <div class="sig-line">Julius Skovgaard</div>
+    <div class="sig-line">Adam Helsted</div>
+    <div class="sig-line">Frederik Secher</div>
+    <div class="sig-line">Jakob Lobedanz Witthøfft</div>
+    <div class="sig-line">Mathias Anker Heegaard</div>
+    <div class="sig-line">Oliver Björkroth</div>
+    <div class="sig-line">Philip Blinkenberg Koch</div>
+  </div>
+</main>
+
+<footer class="border-t border-border py-8 mt-12">
+  <div class="max-w-5xl mx-auto px-4 text-center">
+    <p class="text-xs text-foreground-muted uppercase tracking-widest">Bogreaukratiet</p>
+  </div>
+</footer>
+
+<script>
+  const items = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px 300px 0px' });
+    items.forEach((el) => io.observe(el));
+  } else {
+    items.forEach((el) => el.classList.add('is-visible'));
+  }
+</script>
+</body>
+</html>

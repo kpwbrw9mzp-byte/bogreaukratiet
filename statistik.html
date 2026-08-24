@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bogreaukratiet — Statistik</title>
+<meta name="description" content="Statistik og grafer for Bogreaukratiets læsning" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          background: '#f5f0e6',
+          'background-paper': '#faf7f2',
+          foreground: '#1a1a1a',
+          'foreground-muted': '#4a4a4a',
+          border: '#d4c9b8',
+          'border-dark': '#8b7355',
+          accent: '#d97706',
+          'accent-light': '#f59e0b',
+          'accent-dark': '#b45309',
+        },
+        fontFamily: {
+          heading: ['"Playfair Display"', 'Georgia', 'serif'],
+          body: ['Lora', 'Georgia', 'serif'],
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body {
+    font-family: 'Lora', Georgia, serif;
+    line-height: 1.7;
+    background: #f5f0e6;
+    color: #1a1a1a;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    pointer-events: none;
+    opacity: 0.03;
+    z-index: 9999;
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid #d97706;
+    outline-offset: 2px;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.is-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body class="min-h-screen bg-background">
+
+<header class="w-full border-b border-border-dark">
+  <div class="border-b border-border py-2 px-4 text-center">
+    <span class="text-xs uppercase tracking-widest text-foreground-muted">Næste møde: 17. Oktober 2026</span>
+  </div>
+  <div class="py-6 px-4 text-center">
+    <a class="inline-flex flex-col items-center gap-2 group" href="arkiv.html">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg" class="transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
+        <circle cx="26" cy="26" r="25" stroke="#8b7355" stroke-width="1"/>
+        <circle cx="26" cy="26" r="21" stroke="#d4c9b8" stroke-width="1"/>
+        <path d="M26 17c-2.4-1.8-5.6-2.4-9-1.6v15.4c3.4-.8 6.6-.2 9 1.6 2.4-1.8 5.6-2.4 9-1.6V15.4c-3.4-.8-6.6-.2-9 1.6Z" stroke="#d97706" stroke-width="1.3" stroke-linejoin="round"/>
+        <path d="M26 17v15.4" stroke="#d97706" stroke-width="1.3"/>
+      </svg>
+      <span class="font-heading text-lg tracking-wide">Bogreaukratiet</span>
+    </a>
+  </div>
+  <nav class="border-t border-border py-3 px-4">
+    <div class="max-w-4xl mx-auto flex items-center justify-center gap-8">
+      <a class="text-sm uppercase tracking-widest hover:text-accent transition-colors" href="arkiv.html">Arkiv</a>
+      <a class="text-sm uppercase tracking-widest text-accent hover:text-accent-dark transition-colors" href="statistik.html">Statistik</a>
+      <a class="text-sm uppercase tracking-widest hover:text-accent transition-colors" href="vedtaegter.html">Vedtægter</a>
+      <a class="text-sm uppercase tracking-widest hover:text-accent transition-colors" href="galleri.html">Galleri</a>
+    </div>
+  </nav>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-12">
+  <div class="text-center mb-16">
+    <span class="text-xs uppercase tracking-[0.3em] text-accent font-medium">Statistik og grafer</span>
+    <h2 class="text-3xl md:text-4xl mt-2">Statistik</h2>
+    <div class="mt-4 flex items-center justify-center gap-2">
+      <div class="h-px w-40 bg-border-dark"></div>
+    </div>
+  </div>
+
+  <!-- All books ranked -->
+  <section class="reveal max-w-2xl mx-auto">
+    <div class="bg-background-paper border border-border rounded-sm p-6 sm:p-8">
+      <h3 class="text-xl mb-1">Alle bøger rangeret</h3>
+      <p class="text-sm text-foreground-muted italic mb-6">Opdateres når bedømmelser er indtastet</p>
+      <ol>
+        <li class="flex items-baseline gap-4 py-4 border-b border-border">
+          <span class="font-heading text-2xl text-accent w-7 flex-shrink-0">1</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-lg leading-snug">Den hundredårige der kravlede ud ad vinduet og forsvandt</p>
+            <p class="text-sm text-foreground-muted italic mt-0.5">Jonas Jonasson</p>
+          </div>
+          <span class="text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0">Ikke bedømt</span>
+        </li>
+        <li class="flex items-baseline gap-4 py-4 border-b border-border">
+          <span class="font-heading text-2xl text-accent w-7 flex-shrink-0">2</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-lg leading-snug">11%</p>
+            <p class="text-sm text-foreground-muted italic mt-0.5">Maren Uthaug</p>
+          </div>
+          <span class="text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0">Ikke bedømt</span>
+        </li>
+        <li class="flex items-baseline gap-4 py-4">
+          <span class="font-heading text-2xl text-accent w-7 flex-shrink-0">3</span>
+          <div class="min-w-0 flex-1">
+            <p class="text-lg leading-snug">Animal Farm</p>
+            <p class="text-sm text-foreground-muted italic mt-0.5">George Orwell</p>
+          </div>
+          <span class="text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0">Ikke bedømt</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-border py-8 mt-12">
+  <div class="max-w-5xl mx-auto px-4 text-center">
+    <p class="text-xs text-foreground-muted uppercase tracking-widest">Bogreaukratiet</p>
+  </div>
+</footer>
+
+<script>
+  const items = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    items.forEach((el) => io.observe(el));
+  } else {
+    items.forEach((el) => el.classList.add('is-visible'));
+  }
+</script>
+</body>
+</html>
