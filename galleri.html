@@ -178,7 +178,7 @@
     { src: "galleri/08.jpg", alt: "Dragbanko", caption: "Dragbanko" },
     { src: "galleri/09.mov", type: "video" },
     { src: "galleri/10.jpg", alt: "Adam på alkoholfri druk i Malmö", caption: "Adam på alkoholfri druk i Malmö" },
-    { src: "galleri/11.jpg", alt: "Drengene drikker dram", caption: "Drengene drikker dram" },
+    { src: "galleri/11.jpg", alt: "Drengene drikker dram", caption: "Drengene drikker dram", position: "35%" },
     { src: "galleri/12.jpg", alt: "Julius vasker overskægget", caption: "Julius vasker overskægget" },
     { src: "galleri/13.jpg", alt: "Nabobordet misforstod \"bogklub\" for \"bögklub\"", caption: "Nabobordet misforstod \"bogklub\" for \"bögklub\"" },
   ];
@@ -209,7 +209,7 @@
       } else {
         fig.className = 'photo reveal';
         fig.innerHTML = `
-          <img src="${p.src}" alt="${p.alt || ''}" loading="lazy" />
+          <img src="${p.src}" alt="${p.alt || ''}" loading="lazy" style="${p.position ? `object-position: ${p.position};` : ''}" />
           <div class="photo-overlay"></div>
           ${p.caption ? `<figcaption class="photo-caption text-xs uppercase tracking-widest">${p.caption}</figcaption>` : ''}
         `;
