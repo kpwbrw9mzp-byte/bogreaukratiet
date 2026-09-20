@@ -286,9 +286,18 @@
         if (!badge || avg === undefined) return;
         const text = avg.toLocaleString('da-DK', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
         badge.querySelector('polygon').setAttribute('fill', '#d97706');
-        badge.classList.remove('text-xs', 'uppercase', 'tracking-widest', 'gap-1');
-        badge.classList.add('text-sm', 'gap-1.5');
-        badge.lastChild.textContent = `${text} / 5`;
+        badge.classList.remove('text-xs', 'uppercase', 'tracking-widest', 'gap-1', 'mt-1');
+        badge.classList.add('gap-1.5', 'mt-0.5');
+        const num = document.createElement('span');
+        num.className = 'font-heading text-lg leading-6 text-foreground';
+        num.style.fontVariantNumeric = 'lining-nums';
+        num.textContent = text;
+        const outOf = document.createElement('span');
+        outOf.className = 'font-body text-sm font-normal text-foreground-muted ml-1';
+        outOf.textContent = '/ 5';
+        num.appendChild(outOf);
+        badge.lastChild.replaceWith(num);
+        badge.querySelector('svg').style.transform = 'translateY(2px)';
         badge.title = `Bogklubbens gennemsnit: ${text} af 5`;
       });
     } catch (err) {
