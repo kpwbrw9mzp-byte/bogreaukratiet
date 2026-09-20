@@ -60,6 +60,16 @@
     outline-offset: 2px;
   }
 
+  #ranking summary { list-style: none; }
+  #ranking summary::-webkit-details-marker { display: none; }
+  #ranking summary:hover .book-title { color: #b45309; }
+  #ranking summary:active { opacity: 0.7; }
+  #ranking .chev { transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
+  #ranking details[open] .chev { transform: rotate(180deg); }
+  @media (prefers-reduced-motion: reduce) {
+    #ranking .chev { transition: none; }
+  }
+
   .reveal {
     opacity: 0;
     transform: translateY(14px);
@@ -111,32 +121,9 @@
   <section class="reveal max-w-2xl mx-auto">
     <div class="bg-background-paper border border-border rounded-sm p-6 sm:p-8">
       <h3 class="text-xl mb-1">Alle bøger rangeret</h3>
-      <p class="text-sm text-foreground-muted italic mb-6">Opdateres når bedømmelser er indtastet</p>
-      <ol>
-        <li class="flex items-baseline gap-4 py-4 border-b border-border">
-          <span class="font-heading text-2xl text-accent w-7 flex-shrink-0">1</span>
-          <div class="min-w-0 flex-1">
-            <p class="text-lg leading-snug">Den hundredårige der kravlede ud ad vinduet og forsvandt</p>
-            <p class="text-sm text-foreground-muted italic mt-0.5">Jonas Jonasson</p>
-          </div>
-          <span class="text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0">Ikke bedømt</span>
-        </li>
-        <li class="flex items-baseline gap-4 py-4 border-b border-border">
-          <span class="font-heading text-2xl text-accent w-7 flex-shrink-0">2</span>
-          <div class="min-w-0 flex-1">
-            <p class="text-lg leading-snug">11%</p>
-            <p class="text-sm text-foreground-muted italic mt-0.5">Maren Uthaug</p>
-          </div>
-          <span class="text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0">Ikke bedømt</span>
-        </li>
-        <li class="flex items-baseline gap-4 py-4">
-          <span class="font-heading text-2xl text-accent w-7 flex-shrink-0">3</span>
-          <div class="min-w-0 flex-1">
-            <p class="text-lg leading-snug">Animal Farm</p>
-            <p class="text-sm text-foreground-muted italic mt-0.5">George Orwell</p>
-          </div>
-          <span class="text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0">Ikke bedømt</span>
-        </li>
+      <p class="text-sm text-foreground-muted italic mb-6">Gennemsnit af medlemmernes stjerner. Tryk på en bog for at se, hvem der gav hvad.</p>
+      <ol id="ranking" aria-live="polite">
+        <li class="py-4 text-sm text-foreground-muted italic">Henter bedømmelser…</li>
       </ol>
     </div>
   </section>
@@ -148,6 +135,155 @@
   </div>
 </footer>
 
+<script>
+  // Bedømmelserne ligger i bedoemmelser.json — ret filen, ikke siden her.
+  (async () => {
+    const list = document.getElementById('ranking');
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const STAR = '12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9';
+
+    const el = (tag, cls, text) => {
+      const node = document.createElement(tag);
+      if (cls) node.className = cls;
+      if (text !== undefined) node.textContent = text;
+      return node;
+    };
+
+    const svg = (size, cls) => {
+      const s = document.createElementNS(SVG_NS, 'svg');
+      s.setAttribute('width', size);
+      s.setAttribute('height', size);
+      s.setAttribute('viewBox', '0 0 24 24');
+      s.setAttribute('fill', 'none');
+      s.setAttribute('aria-hidden', 'true');
+      if (cls) s.setAttribute('class', cls);
+      return s;
+    };
+
+    const starIcon = (size, filled) => {
+      const s = svg(size);
+      const p = document.createElementNS(SVG_NS, 'polygon');
+      p.setAttribute('points', STAR);
+      p.setAttribute('stroke', '#d97706');
+      p.setAttribute('stroke-width', '1.5');
+      p.setAttribute('stroke-linejoin', 'round');
+      p.setAttribute('fill', filled ? '#d97706' : 'none');
+      s.appendChild(p);
+      return s;
+    };
+
+    const chevron = () => {
+      const s = svg(16, 'chev flex-shrink-0 self-center text-foreground-muted');
+      const p = document.createElementNS(SVG_NS, 'path');
+      p.setAttribute('d', 'M6 9l6 6 6-6');
+      p.setAttribute('stroke', 'currentColor');
+      p.setAttribute('stroke-width', '1.5');
+      p.setAttribute('stroke-linecap', 'round');
+      p.setAttribute('stroke-linejoin', 'round');
+      s.appendChild(p);
+      return s;
+    };
+
+    const fmt = (n) => n.toLocaleString('da-DK', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    const summarize = (book) => {
+      const ratings = {};
+      for (const [name, value] of Object.entries(book.bedoemmelser || {})) {
+        const n = Number(value);
+        if (Number.isFinite(n) && n >= 1 && n <= 5) ratings[name] = n;
+        else console.warn(`Ugyldig bedømmelse for ${book.titel} / ${name}: ${value} (skal være 1–5)`);
+      }
+      const values = Object.values(ratings);
+      const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : null;
+      return { ...book, ratings, avg, count: values.length };
+    };
+
+    const memberRatings = (book, members) => {
+      const names = [...members, ...Object.keys(book.ratings).filter((n) => !members.includes(n))];
+      const ul = el('ul', 'pb-4 pl-11 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1');
+      for (const name of names) {
+        const li = el('li', 'flex items-center justify-between gap-3 py-1');
+        li.appendChild(el('span', 'text-sm', name));
+        const rating = book.ratings[name];
+        if (rating === undefined) {
+          const none = el('span', 'text-sm text-foreground-muted', '–');
+          none.setAttribute('aria-label', 'ikke bedømt');
+          li.appendChild(none);
+        } else {
+          const stars = el('span', 'flex items-center gap-0.5');
+          stars.setAttribute('role', 'img');
+          stars.setAttribute('aria-label', `${rating} af 5 stjerner`);
+          for (let i = 1; i <= 5; i++) stars.appendChild(starIcon(13, i <= Math.round(rating)));
+          li.appendChild(stars);
+        }
+        ul.appendChild(li);
+      }
+      return ul;
+    };
+
+    const bookRow = (book, rank, members) => {
+      const li = el('li', 'border-b border-border last:border-b-0');
+      const rated = book.avg !== null;
+
+      const head = el(rated ? 'summary' : 'div',
+        'flex items-baseline gap-4 py-4' + (rated
+          ? ' cursor-pointer rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent'
+          : ''));
+      head.appendChild(el('span', 'font-heading text-2xl w-7 flex-shrink-0 ' + (rated ? 'text-accent' : 'text-border-dark'), rated ? String(rank) : '–'));
+
+      const info = el('div', 'min-w-0 flex-1');
+      info.appendChild(el('p', 'book-title text-lg leading-snug transition-colors', book.titel));
+      info.appendChild(el('p', 'text-sm text-foreground-muted italic mt-0.5', book.forfatter));
+      head.appendChild(info);
+
+      if (!rated) {
+        head.appendChild(el('span', 'text-xs text-foreground-muted uppercase tracking-widest flex-shrink-0', 'Ikke bedømt'));
+        li.appendChild(head);
+        return li;
+      }
+
+      const score = el('div', 'text-right flex-shrink-0');
+      const avgLine = el('p', 'font-heading text-xl flex items-center justify-end gap-1.5');
+      avgLine.appendChild(starIcon(15, true));
+      avgLine.appendChild(document.createTextNode(fmt(book.avg)));
+      score.appendChild(avgLine);
+      score.appendChild(el('p', 'text-xs text-foreground-muted', book.count === 1 ? '1 bedømmelse' : `${book.count} bedømmelser`));
+      head.appendChild(score);
+      head.appendChild(chevron());
+
+      const details = document.createElement('details');
+      details.appendChild(head);
+      details.appendChild(memberRatings(book, members));
+      li.appendChild(details);
+      return li;
+    };
+
+    try {
+      const res = await fetch('bedoemmelser.json', { cache: 'no-cache' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const members = data.medlemmer || [];
+      const books = (data.boeger || []).map(summarize);
+
+      const rated = books.filter((b) => b.avg !== null).sort((a, b) => b.avg - a.avg);
+      const unrated = books.filter((b) => b.avg === null);
+
+      list.replaceChildren();
+      let rank = 0;
+      let prevKey = null;
+      rated.forEach((book, i) => {
+        const key = Math.round(book.avg * 10);
+        if (key !== prevKey) rank = i + 1;
+        prevKey = key;
+        list.appendChild(bookRow(book, rank, members));
+      });
+      unrated.forEach((book) => list.appendChild(bookRow(book, null, members)));
+    } catch (err) {
+      console.error(err);
+      list.replaceChildren(el('li', 'py-4 text-sm text-foreground-muted italic', 'Kunne ikke hente bedømmelserne. Tjek at bedoemmelser.json ligger ved siden af statistik.html, og at siden åbnes fra en server (ikke direkte som fil).'));
+    }
+  })();
+</script>
 <script>
   const items = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
