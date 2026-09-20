@@ -285,7 +285,12 @@
         const avg = averages.get(card.querySelector('h3')?.textContent.trim());
         if (!badge || avg === undefined) return;
         const text = avg.toLocaleString('da-DK', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-        badge.querySelector('polygon').setAttribute('fill', '#d97706');
+        const star = badge.querySelector('svg');
+        star.setAttribute('width', '17');
+        star.setAttribute('height', '17');
+        star.querySelector('polygon').setAttribute('fill', '#d97706');
+        badge.classList.remove('text-xs', 'uppercase', 'tracking-widest', 'gap-1');
+        badge.classList.add('text-sm', 'gap-1.5');
         badge.lastChild.textContent = text;
         badge.title = `Bogklubbens gennemsnit: ${text} af 5`;
       });
