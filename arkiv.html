@@ -156,7 +156,7 @@
         <div class="mt-4">
           <div class="flex items-start justify-between gap-3">
             <h3 class="text-xl">Man's Search for Meaning</h3>
-            <span class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
+            <span data-rating class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9"/></svg>
               afventer
             </span>
@@ -180,7 +180,7 @@
         <div class="mt-4">
           <div class="flex items-start justify-between gap-3">
             <h3 class="text-xl">Den hundredårige der kravlede ud ad vinduet og forsvandt</h3>
-            <span class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
+            <span data-rating class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9"/></svg>
               afventer
             </span>
@@ -204,7 +204,7 @@
         <div class="mt-4">
           <div class="flex items-start justify-between gap-3">
             <h3 class="text-xl">11%</h3>
-            <span class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
+            <span data-rating class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9"/></svg>
               afventer
             </span>
@@ -228,7 +228,7 @@
         <div class="mt-4">
           <div class="flex items-start justify-between gap-3">
             <h3 class="text-xl">Animal Farm</h3>
-            <span class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
+            <span data-rating class="flex items-center gap-1 flex-shrink-0 mt-1 text-xs text-foreground-muted uppercase tracking-widest">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="1.5" stroke-linejoin="round"><polygon points="12 2 15 9 22 9 16.5 13.5 18.5 21 12 16.5 5.5 21 7.5 13.5 2 9 9 9"/></svg>
               afventer
             </span>
@@ -268,6 +268,31 @@
   } else {
     items.forEach((el) => el.classList.add('is-visible'));
   }
+
+  // Gennemsnittet kommer fra bedoemmelser.json; kort uden bedømmelser beholder "afventer".
+  (async () => {
+    try {
+      const res = await fetch('bedoemmelser.json', { cache: 'no-cache' });
+      if (!res.ok) return;
+      const data = await res.json();
+      const averages = new Map();
+      for (const book of data.boeger || []) {
+        const values = Object.values(book.bedoemmelser || {}).map(Number).filter((n) => Number.isFinite(n) && n >= 1 && n <= 5);
+        if (values.length) averages.set(book.titel, values.reduce((a, b) => a + b, 0) / values.length);
+      }
+      document.querySelectorAll('.timeline-card').forEach((card) => {
+        const badge = card.querySelector('[data-rating]');
+        const avg = averages.get(card.querySelector('h3')?.textContent.trim());
+        if (!badge || avg === undefined) return;
+        const text = avg.toLocaleString('da-DK', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+        badge.querySelector('polygon').setAttribute('fill', '#d97706');
+        badge.lastChild.textContent = text;
+        badge.title = `Bogklubbens gennemsnit: ${text} af 5`;
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  })();
 </script>
 </body>
 </html>
