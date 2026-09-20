@@ -123,7 +123,7 @@
   <section class="reveal max-w-2xl mx-auto">
     <div class="bg-background-paper border border-border rounded-sm p-6 sm:p-8">
       <h3 class="text-xl mb-1">Alle bøger rangeret</h3>
-      <p class="text-sm text-foreground-muted italic mb-6">Gennemsnit af medlemmernes stjerner. Tryk på en bog for at se, hvem der gav hvad.</p>
+      <p class="text-sm text-foreground-muted italic mb-6">Gennemsnit af medlemmernes stjerner ud af 5. Tryk på en bog for at se, hvem der gav hvad.</p>
       <ol id="ranking" aria-live="polite">
         <li class="py-4 text-sm text-foreground-muted italic">Henter bedømmelser…</li>
       </ol>
@@ -247,7 +247,9 @@
       const score = el('div', 'text-right flex-shrink-0');
       const avgLine = el('p', 'score-num font-heading text-xl flex items-center justify-end gap-1.5');
       avgLine.appendChild(starIcon(15, true));
-      avgLine.appendChild(document.createTextNode(fmt(book.avg)));
+      const avgNum = el('span', '', fmt(book.avg));
+      avgNum.appendChild(el('span', 'font-body text-sm font-normal text-foreground-muted ml-1', '/ 5'));
+      avgLine.appendChild(avgNum);
       score.appendChild(avgLine);
       score.appendChild(el('p', 'text-xs text-foreground-muted', book.count === 1 ? '1 bedømmelse' : `${book.count} bedømmelser`));
       head.appendChild(score);
