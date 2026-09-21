@@ -293,8 +293,10 @@
       box.appendChild(el('h3', 'text-xl mb-1', title));
       box.appendChild(el('p', 'text-sm text-foreground-muted italic mb-6', subtitle));
       const names = new Intl.ListFormat('da', { style: 'long', type: 'conjunction' }).format(critics.map((c) => c.name));
-      box.appendChild(el('p', 'font-heading text-2xl leading-snug mb-1', names));
-      box.appendChild(scoreLine(critics[0].avg));
+      const row = el('div', 'flex items-center justify-between gap-4');
+      row.appendChild(el('p', 'font-heading text-2xl leading-snug min-w-0', names));
+      row.appendChild(scoreLine(critics[0].avg, 'flex-shrink-0 whitespace-nowrap'));
+      box.appendChild(row);
       return box;
     };
 
