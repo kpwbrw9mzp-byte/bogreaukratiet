@@ -189,6 +189,12 @@
       return s;
     };
 
+    // Samme slug-regel som i arkiv.html, som giver hvert bogkort et anker.
+    const slug = (text) => text.toLowerCase()
+      .replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
     const fmt = (n) => n.toLocaleString('da-DK', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
     const summarize = (book) => {
@@ -214,7 +220,7 @@
 
     const memberRatings = (book, members) => {
       const names = [...members, ...Object.keys(book.ratings).filter((n) => !members.includes(n))];
-      const ul = el('ul', 'pb-4 pl-11 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1');
+      const ul = el('ul', 'grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1');
       for (const name of names) {
         const li = el('li', 'flex items-center justify-between gap-3 py-1');
         li.appendChild(el('span', 'text-sm', name));
@@ -265,7 +271,12 @@
 
       const details = document.createElement('details');
       details.appendChild(head);
-      details.appendChild(memberRatings(book, members));
+      const panel = el('div', 'pl-11 pb-5');
+      panel.appendChild(memberRatings(book, members));
+      const link = el('a', 'mt-4 inline-flex items-center rounded-sm border border-accent px-4 py-2 text-sm text-accent-dark transition-colors hover:bg-accent hover:text-background-paper active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', 'Læs om vores oplevelse');
+      link.href = `arkiv.html#${slug(book.titel)}`;
+      panel.appendChild(link);
+      details.appendChild(panel);
       li.appendChild(details);
       return li;
     };

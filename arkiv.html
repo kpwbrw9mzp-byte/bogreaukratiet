@@ -108,6 +108,7 @@
   @media (prefers-reduced-motion: reduce) {
     .reveal { opacity: 1; transform: none; transition: none; }
   }
+  .timeline-card { scroll-margin-top: 1.5rem; }
 </style>
 </head>
 <body class="min-h-screen bg-background">
@@ -254,6 +255,20 @@
 </footer>
 
 <script>
+  // Hvert kort får et anker ud fra titlen (fx arkiv.html#animal-farm), så statistik-siden kan linke hertil.
+  // Samme slug-regel bruges i statistik.html.
+  const slug = (text) => text.toLowerCase()
+    .replace(/æ/g, 'ae').replace(/ø/g, 'oe').replace(/å/g, 'aa')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  document.querySelectorAll('.timeline-card').forEach((card) => {
+    const heading = card.querySelector('h3');
+    if (heading) card.id = slug(heading.textContent.trim());
+  });
+  if (location.hash) {
+    document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+  }
+
   const items = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((entries) => {
