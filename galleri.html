@@ -169,7 +169,7 @@
     display: block;
     width: auto;
     height: auto;
-    max-width: min(calc(100vw - 10rem), 1600px);
+    max-width: min(calc(100vw - 9rem), 1600px);
     max-height: calc(100vh - 9rem);
     border-radius: 2px;
     background: #1a1a1a;
@@ -184,23 +184,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.5rem;
   }
+  /* Kun selve pilen er synlig; knappens flade er usynlig og giver blot et stort nok trykområde */
   .lightbox-nav {
     flex: none;
-    width: 2.75rem; height: 2.75rem;
+    width: 2.5rem; height: 3.5rem;
     display: grid;
     place-items: center;
-    border-radius: 9999px;
-    border: 1px solid rgba(250, 247, 242, 0.35);
-    background: rgba(250, 247, 242, 0.1);
+    padding: 0;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
     color: #faf7f2;
+    opacity: 0.7;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.2s ease;
   }
-  .lightbox-nav:hover { background: rgba(250, 247, 242, 0.22); }
-  .lightbox-nav:active { transform: scale(0.94); }
-  .lightbox-nav:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
+  .lightbox-nav svg {
+    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.65)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4));
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lightbox-nav:hover { opacity: 1; }
+  .lightbox-prev:hover svg { transform: translateX(-2px); }
+  .lightbox-next:hover svg { transform: translateX(2px); }
+  .lightbox-nav:active { opacity: 0.5; }
+  .lightbox-nav:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; opacity: 1; }
   .lightbox-nav[disabled] { visibility: hidden; }
   @keyframes lightbox-in-next { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
   @keyframes lightbox-in-prev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
@@ -213,13 +222,10 @@
     .lightbox-nav {
       position: absolute;
       top: 50%;
-      margin-top: -1.375rem;
-      background: rgba(18, 13, 9, 0.5);
-      -webkit-backdrop-filter: blur(4px);
-      backdrop-filter: blur(4px);
+      margin-top: -1.75rem;
     }
-    .lightbox-prev { left: 0.5rem; }
-    .lightbox-next { right: 0.5rem; }
+    .lightbox-prev { left: 0; }
+    .lightbox-next { right: 0; }
   }
   .lightbox-caption {
     max-width: min(94vw, 40rem);
@@ -247,7 +253,8 @@
   .lightbox-close:active { transform: scale(0.94); }
   .lightbox-close:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .lightbox, .lightbox-figure, .lightbox-close, .lightbox-nav, .play-badge { transition: none; }
+    .lightbox, .lightbox-figure, .lightbox-close, .lightbox-nav, .lightbox-nav svg, .play-badge { transition: none; }
+    .lightbox-prev:hover svg, .lightbox-next:hover svg { transform: none; }
     .lightbox-figure { transform: none; }
     .lightbox-figure.slide-next, .lightbox-figure.slide-prev { animation: none; }
     .video-item:hover .play-badge { transform: none; }
@@ -320,11 +327,11 @@
   <figure class="lightbox-figure">
     <div class="lightbox-frame">
       <button type="button" class="lightbox-nav lightbox-prev" aria-label="Forrige">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
       </button>
       <div id="lightbox-media"></div>
       <button type="button" class="lightbox-nav lightbox-next" aria-label="Næste">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
     <figcaption id="lightbox-caption" class="lightbox-caption" hidden></figcaption>
