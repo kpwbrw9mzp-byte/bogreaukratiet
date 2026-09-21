@@ -234,7 +234,7 @@
       head.appendChild(el('span', 'font-heading text-2xl w-7 flex-shrink-0 ' + (rated ? 'text-accent' : 'text-border-dark'), rated ? String(rank) : '–'));
 
       const info = el('div', 'min-w-0 flex-1');
-      info.appendChild(el('p', 'book-title text-lg leading-snug transition-colors', book.titel));
+      info.appendChild(el('p', 'book-title text-lg leading-snug transition-colors sm:pr-12', book.titel));
       info.appendChild(el('p', 'text-sm text-foreground-muted italic mt-0.5', book.forfatter));
       head.appendChild(info);
 
