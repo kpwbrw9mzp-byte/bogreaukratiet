@@ -129,9 +129,6 @@
       </ol>
     </div>
   </section>
-
-  <!-- Hårdeste og mildeste kritiker (udfyldes af scriptet) -->
-  <section id="critics" class="reveal max-w-2xl mx-auto"></section>
 </main>
 
 <footer class="border-t border-border py-8 mt-12">
@@ -302,44 +299,6 @@
       );
     };
 
-    const criticBox = (title, subtitle, critics) => {
-      const box = el('div', 'bg-background-paper border border-border rounded-sm p-6 sm:p-8');
-      box.appendChild(el('h3', 'text-xl mb-1', title));
-      box.appendChild(el('p', 'text-sm text-foreground-muted italic mb-6', subtitle));
-      const names = new Intl.ListFormat('da', { style: 'long', type: 'conjunction' }).format(critics.map((c) => c.name));
-      const row = el('div', 'flex items-center justify-center gap-8');
-      row.appendChild(el('p', 'text-lg leading-snug min-w-0 relative top-0.5', names));
-      row.appendChild(scoreLine(critics[0].avg, 'flex-shrink-0 whitespace-nowrap'));
-      box.appendChild(row);
-      return box;
-    };
-
-    // Regnes ud af hvert medlems gennemsnit på tværs af alle bøger. Ved lighed (samme tal med én decimal) står alle med.
-    const renderCritics = (books, members) => {
-      const totals = new Map();
-      for (const book of books) {
-        for (const [name, rating] of Object.entries(book.ratings)) {
-          const t = totals.get(name) || { sum: 0, count: 0 };
-          t.sum += rating;
-          t.count += 1;
-          totals.set(name, t);
-        }
-      }
-      const critics = members.flatMap((name) => {
-        const t = totals.get(name);
-        return t ? [{ name, avg: t.sum / t.count, key: Math.round((t.sum / t.count) * 10) }] : [];
-      });
-      const keys = critics.map((c) => c.key);
-      const lowest = Math.min(...keys);
-      const highest = Math.max(...keys);
-      if (critics.length < 2 || lowest === highest) return;
-
-      const grid = el('div', 'grid gap-6 mt-6 sm:grid-cols-2');
-      grid.appendChild(criticBox('Hårdeste kritiker', 'Giver færrest stjerner i gennemsnit', critics.filter((c) => c.key === lowest)));
-      grid.appendChild(criticBox('Mildeste kritiker', 'Giver flest stjerner i gennemsnit', critics.filter((c) => c.key === highest)));
-      document.getElementById('critics').replaceChildren(grid);
-    };
-
     try {
       const res = await fetch('bedoemmelser.json', { cache: 'no-cache' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -361,7 +320,6 @@
       });
       unrated.forEach((book) => list.appendChild(bookRow(book, null, members)));
       renderStats(books);
-      renderCritics(books, members);
     } catch (err) {
       console.error(err);
       list.replaceChildren(el('li', 'py-4 text-sm text-foreground-muted italic', 'Kunne ikke hente bedømmelserne. Tjek at bedoemmelser.json ligger ved siden af statistik.html, og at siden åbnes fra en server (ikke direkte som fil).'));
