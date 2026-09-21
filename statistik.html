@@ -294,7 +294,7 @@
       box.appendChild(el('p', 'text-sm text-foreground-muted italic mb-6', subtitle));
       const names = new Intl.ListFormat('da', { style: 'long', type: 'conjunction' }).format(critics.map((c) => c.name));
       const row = el('div', 'flex items-center justify-center gap-8');
-      row.appendChild(el('p', 'font-heading text-xl font-bold tracking-[-0.02em] leading-tight min-w-0', names));
+      row.appendChild(el('p', 'text-lg leading-snug min-w-0 relative top-0.5', names));
       row.appendChild(scoreLine(critics[0].avg, 'flex-shrink-0 whitespace-nowrap'));
       box.appendChild(row);
       return box;
