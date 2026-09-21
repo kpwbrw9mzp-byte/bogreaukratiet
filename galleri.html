@@ -143,10 +143,13 @@
     align-items: center;
     justify-content: center;
     padding: 4.5rem 1rem 2rem;
-    background: rgba(24, 18, 12, 0.6);
+    background: rgba(18, 13, 9, 0.82);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     opacity: 0;
     transition: opacity 0.22s ease;
     cursor: zoom-out;
+    touch-action: pan-y pinch-zoom;
   }
   .lightbox[hidden] { display: none; }
   .lightbox.is-open { opacity: 1; }
@@ -166,7 +169,7 @@
     display: block;
     width: auto;
     height: auto;
-    max-width: min(94vw, 1600px);
+    max-width: min(calc(100vw - 10rem), 1600px);
     max-height: calc(100vh - 9rem);
     border-radius: 2px;
     background: #1a1a1a;
@@ -175,6 +178,48 @@
   @supports (height: 100dvh) {
     .lightbox-figure img,
     .lightbox-figure video { max-height: calc(100dvh - 9rem); }
+  }
+  .lightbox-frame {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .lightbox-nav {
+    flex: none;
+    width: 2.75rem; height: 2.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 9999px;
+    border: 1px solid rgba(250, 247, 242, 0.35);
+    background: rgba(250, 247, 242, 0.1);
+    color: #faf7f2;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lightbox-nav:hover { background: rgba(250, 247, 242, 0.22); }
+  .lightbox-nav:active { transform: scale(0.94); }
+  .lightbox-nav:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
+  .lightbox-nav[disabled] { visibility: hidden; }
+  @keyframes lightbox-in-next { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+  @keyframes lightbox-in-prev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+  .lightbox-figure.slide-next { animation: lightbox-in-next 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+  .lightbox-figure.slide-prev { animation: lightbox-in-prev 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+  /* Smalle skærme: pilene ligger inde over billedets kanter i stedet for ved siden af */
+  @media (max-width: 699px) {
+    .lightbox-figure img,
+    .lightbox-figure video { max-width: min(94vw, 1600px); }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      margin-top: -1.375rem;
+      background: rgba(18, 13, 9, 0.5);
+      -webkit-backdrop-filter: blur(4px);
+      backdrop-filter: blur(4px);
+    }
+    .lightbox-prev { left: 0.5rem; }
+    .lightbox-next { right: 0.5rem; }
   }
   .lightbox-caption {
     max-width: min(94vw, 40rem);
@@ -202,8 +247,9 @@
   .lightbox-close:active { transform: scale(0.94); }
   .lightbox-close:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) {
-    .lightbox, .lightbox-figure, .lightbox-close, .play-badge { transition: none; }
+    .lightbox, .lightbox-figure, .lightbox-close, .lightbox-nav, .play-badge { transition: none; }
     .lightbox-figure { transform: none; }
+    .lightbox-figure.slide-next, .lightbox-figure.slide-prev { animation: none; }
     .video-item:hover .play-badge { transform: none; }
   }
 
@@ -272,7 +318,15 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
   </button>
   <figure class="lightbox-figure">
-    <div id="lightbox-media"></div>
+    <div class="lightbox-frame">
+      <button type="button" class="lightbox-nav lightbox-prev" aria-label="Forrige">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div id="lightbox-media"></div>
+      <button type="button" class="lightbox-nav lightbox-next" aria-label="Næste">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </div>
     <figcaption id="lightbox-caption" class="lightbox-caption" hidden></figcaption>
   </figure>
 </div>
@@ -307,28 +361,38 @@
   const empty = document.getElementById('empty-state');
 
   // Forstørret visning: billedet/videoen vises i sine egne proportioner (uden beskæring),
-  // og baggrunden bag bliver mørkere. Luk med Esc, klik udenfor eller krydset.
+  // og baggrunden bag bliver mørkere med slør. Man kan bladre mellem alle billeder og videoer
+  // med pilene, piletasterne eller ved at swipe. Luk med Esc, klik udenfor eller krydset.
   const lightbox = document.getElementById('lightbox');
+  const lightboxFigure = lightbox.querySelector('.lightbox-figure');
   const lightboxMedia = document.getElementById('lightbox-media');
   const lightboxCaption = document.getElementById('lightbox-caption');
   const lightboxClose = lightbox.querySelector('.lightbox-close');
+  const prevBtn = lightbox.querySelector('.lightbox-prev');
+  const nextBtn = lightbox.querySelector('.lightbox-next');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  let lastTrigger = null;
+  const tiles = new Map(); // post -> feltets knap, så fokus kan vende tilbage til det viste billede
+  let current = -1;
   let closeTimer = null;
 
-  const openLightbox = (p, trigger) => {
-    clearTimeout(closeTimer);
-    lastTrigger = trigger;
+  const releaseVideo = (v) => { v.pause(); v.removeAttribute('src'); v.load(); };
+  const preload = (i) => { const p = photos[i]; if (p && p.type !== 'video') new Image().src = p.src; };
+
+  // Viser post nr. index. dir: 1 = næste, -1 = forrige, 0 = første visning.
+  const showAt = (index, dir = 0, autoplay = false) => {
+    current = index;
+    const p = photos[index];
+    lightboxMedia.querySelectorAll('video').forEach(releaseVideo);
     lightboxMedia.replaceChildren();
 
     if (p.type === 'video') {
       const video = document.createElement('video');
-      video.src = p.src;
+      video.src = autoplay ? p.src : `${p.src}#t=0.1`; // uden autoplay vises et billede fra videoen
       video.controls = true;
       video.playsInline = true;
-      video.autoplay = true;
+      video.preload = 'metadata';
       lightboxMedia.appendChild(video);
-      video.play()?.catch(() => {});
+      if (autoplay) video.play()?.catch(() => {});
     } else {
       const img = document.createElement('img');
       img.src = p.src;
@@ -338,6 +402,29 @@
 
     lightboxCaption.textContent = p.caption || '';
     lightboxCaption.hidden = !p.caption;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === photos.length - 1;
+    if (document.activeElement === prevBtn && prevBtn.disabled) lightboxClose.focus();
+    if (document.activeElement === nextBtn && nextBtn.disabled) lightboxClose.focus();
+
+    lightboxFigure.classList.remove('slide-next', 'slide-prev');
+    if (dir && !reducedMotion.matches) {
+      void lightboxFigure.offsetWidth; // genstart animationen
+      lightboxFigure.classList.add(dir > 0 ? 'slide-next' : 'slide-prev');
+    }
+    preload(index + 1);
+    preload(index - 1);
+  };
+
+  const go = (dir) => {
+    const next = current + dir;
+    if (next < 0 || next >= photos.length) return;
+    showAt(next, dir);
+  };
+
+  const openLightbox = (p) => {
+    clearTimeout(closeTimer);
+    showAt(photos.indexOf(p), 0, p.type === 'video');
     lightbox.hidden = false;
     document.body.style.overflow = 'hidden';
     requestAnimationFrame(() => lightbox.classList.add('is-open'));
@@ -346,35 +433,61 @@
 
   const closeLightbox = () => {
     if (lightbox.hidden) return;
-    lightboxMedia.querySelector('video')?.pause();
+    lightboxMedia.querySelectorAll('video').forEach((v) => v.pause());
     lightbox.classList.remove('is-open');
     const finish = () => {
       lightbox.hidden = true;
-      lightboxMedia.querySelectorAll('video').forEach((v) => { v.removeAttribute('src'); v.load(); });
+      lightboxMedia.querySelectorAll('video').forEach(releaseVideo);
       lightboxMedia.replaceChildren();
       document.body.style.overflow = '';
-      lastTrigger?.focus({ preventScroll: true });
+      tiles.get(photos[current])?.focus();
     };
     if (reducedMotion.matches) finish();
     else closeTimer = setTimeout(finish, 240);
   };
 
+  prevBtn.addEventListener('click', () => go(-1));
+  nextBtn.addEventListener('click', () => go(1));
   lightbox.addEventListener('click', (e) => {
-    if (!e.target.closest('#lightbox-media, #lightbox-caption')) closeLightbox();
+    if (!e.target.closest('#lightbox-media, #lightbox-caption, .lightbox-nav')) closeLightbox();
   });
+
   document.addEventListener('keydown', (e) => {
     if (lightbox.hidden) return;
     if (e.key === 'Escape') {
       closeLightbox();
+    } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && document.activeElement?.tagName !== 'VIDEO') {
+      // Har videoen fokus, bruger piletasterne den selv til at spole.
+      e.preventDefault();
+      go(e.key === 'ArrowRight' ? 1 : -1);
     } else if (e.key === 'Tab') {
-      // Hold tastaturfokus inde i visningen (krydset + evt. videokontroller).
-      const focusable = [...lightbox.querySelectorAll('button, video[controls]')];
+      // Hold tastaturfokus inde i visningen (krydset, pilene og evt. videokontroller).
+      const focusable = [...lightbox.querySelectorAll('button:not([disabled]), video[controls]')];
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   });
+
+  // Swipe: træk til venstre = næste, til højre = forrige.
+  let touchStart = null;
+  lightbox.addEventListener('touchstart', (e) => {
+    touchStart = null;
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const video = e.target.closest('video');
+    if (video && t.clientY > video.getBoundingClientRect().bottom - 64) return; // videoens tidslinje
+    touchStart = { x: t.clientX, y: t.clientY };
+  }, { passive: true });
+  lightbox.addEventListener('touchend', (e) => {
+    if (!touchStart) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStart.x;
+    const dy = t.clientY - touchStart.y;
+    touchStart = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(dx < 0 ? 1 : -1);
+  }, { passive: true });
 
   if (photos.length === 0) {
     grid.classList.add('hidden');
@@ -386,7 +499,8 @@
       const open = document.createElement('button');
       open.type = 'button';
       open.className = 'tile-open';
-      open.addEventListener('click', () => openLightbox(p, open));
+      open.addEventListener('click', () => openLightbox(p));
+      tiles.set(p, open);
 
       if (p.type === 'video') {
         fig.className = 'reveal';
