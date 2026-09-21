@@ -64,7 +64,7 @@
   #ranking summary::-webkit-details-marker { display: none; }
   #ranking summary:hover .book-title { color: #b45309; }
   #ranking summary:active { opacity: 0.7; }
-  .score-num { font-variant-numeric: lining-nums; }
+  .score-num, .stat-num { font-variant-numeric: lining-nums; }
   .score-num svg { transform: translateY(1px); }
   #ranking .chev { position: relative; top: 1px; transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
   #ranking details[open] .chev { transform: rotate(180deg); }
@@ -123,6 +123,7 @@
   <section class="reveal max-w-2xl mx-auto">
     <div class="bg-background-paper border border-border rounded-sm p-6 sm:p-8">
       <h3 class="text-xl mb-1">Alle bøger rangeret</h3>
+      <div id="stats" class="flex flex-wrap gap-x-8 gap-y-1 mb-3 empty:hidden"></div>
       <p class="text-sm text-foreground-muted italic mb-6">Rangeret efter medlemmernes gennemsnit. Tryk på en bog for at se, hvem der gav hvad.</p>
       <ol id="ranking" aria-live="polite">
         <li class="py-4 text-sm text-foreground-muted italic">Henter bedømmelser…</li>
@@ -270,6 +271,24 @@
       return li;
     };
 
+    // Antal bøger = bøgerne i filen; sider = summen af hver bogs "sider".
+    const renderStats = (books) => {
+      const pagesOf = (b) => (Number.isFinite(Number(b.sider)) && Number(b.sider) > 0 ? Number(b.sider) : 0);
+      books.filter((b) => !pagesOf(b)).forEach((b) => console.warn(`Mangler sideantal ("sider") for ${b.titel}`));
+      const pages = books.reduce((sum, b) => sum + pagesOf(b), 0);
+
+      const note = (value, label) => {
+        const p = el('p', 'flex items-baseline gap-1.5');
+        p.appendChild(el('span', 'stat-num font-heading text-xl', value.toLocaleString('da-DK')));
+        p.appendChild(el('span', 'text-sm text-foreground-muted italic', label));
+        return p;
+      };
+      document.getElementById('stats').replaceChildren(
+        note(books.length, books.length === 1 ? 'bog læst' : 'bøger læst'),
+        note(pages, 'sider læst'),
+      );
+    };
+
     const criticBox = (title, subtitle, critics) => {
       const box = el('div', 'bg-background-paper border border-border rounded-sm p-6 sm:p-8');
       box.appendChild(el('h3', 'text-xl mb-1', title));
@@ -326,6 +345,7 @@
         list.appendChild(bookRow(book, rank, members));
       });
       unrated.forEach((book) => list.appendChild(bookRow(book, null, members)));
+      renderStats(books);
       renderCritics(books, members);
     } catch (err) {
       console.error(err);

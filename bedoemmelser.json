@@ -4,16 +4,19 @@
     {
       "titel": "Den hundredårige der kravlede ud ad vinduet og forsvandt",
       "forfatter": "Jonas Jonasson",
+      "sider": 372,
       "bedoemmelser": { "Gustav": 3, "Julius": 4, "Adam": 3, "Frederik": 3, "Jakob": 4, "Mathias": 4, "Oliver": 3, "Philip": 3 }
     },
     {
       "titel": "11%",
       "forfatter": "Maren Uthaug",
+      "sider": 352,
       "bedoemmelser": { "Gustav": 3, "Julius": 2, "Adam": 1, "Frederik": 2, "Jakob": 2, "Mathias": 2, "Oliver": 2, "Philip": 4 }
     },
     {
       "titel": "Animal Farm",
       "forfatter": "George Orwell",
+      "sider": 128,
       "bedoemmelser": { "Gustav": 3, "Julius": 3, "Adam": 3, "Frederik": 4, "Jakob": 4, "Mathias": 3, "Oliver": 4, "Philip": 4 }
     }
   ]
