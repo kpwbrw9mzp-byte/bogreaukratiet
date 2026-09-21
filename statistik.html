@@ -271,12 +271,15 @@
 
       const details = document.createElement('details');
       details.appendChild(head);
-      const panel = el('div', 'pl-11 pb-5');
-      panel.appendChild(memberRatings(book, members));
-      const link = el('a', 'mt-4 inline-flex items-center rounded-sm border border-accent px-4 py-2 text-sm text-accent-dark transition-colors hover:bg-accent hover:text-background-paper active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', 'Læs om vores oplevelse');
+      const ratings = el('div', 'pl-11');
+      ratings.appendChild(memberRatings(book, members));
+      details.appendChild(ratings);
+
+      const footer = el('div', 'flex justify-center pt-4 pb-5');
+      const link = el('a', 'inline-flex items-center rounded-sm border border-accent px-4 py-2 text-sm text-accent-dark transition-colors hover:bg-accent hover:text-background-paper active:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent', 'Læs om vores oplevelse');
       link.href = `arkiv.html#${slug(book.titel)}`;
-      panel.appendChild(link);
-      details.appendChild(panel);
+      footer.appendChild(link);
+      details.appendChild(footer);
       li.appendChild(details);
       return li;
     };
