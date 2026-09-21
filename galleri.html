@@ -93,6 +93,7 @@
   }
 
   .video-item {
+    position: relative;
     background: #1a1a1a;
     border-radius: 2px;
     overflow: hidden;
@@ -104,6 +105,108 @@
     object-fit: contain;
     display: block;
   }
+  /* Usynlig knap over hele feltet: åbner forstørret visning */
+  .tile-open {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+  }
+  .tile-open:focus-visible { outline: 2px solid #d97706; outline-offset: -4px; }
+
+  .play-badge {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 3.25rem; height: 3.25rem;
+    margin: -1.625rem 0 0 -1.625rem;
+    display: grid;
+    place-items: center;
+    border-radius: 9999px;
+    background: rgba(26, 22, 18, 0.55);
+    border: 1px solid rgba(250, 247, 242, 0.55);
+    color: #faf7f2;
+    pointer-events: none;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .video-item:hover .play-badge { transform: scale(1.08); }
+
+  /* Forstørret visning */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4.5rem 1rem 2rem;
+    background: rgba(24, 18, 12, 0.6);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+    cursor: zoom-out;
+  }
+  .lightbox[hidden] { display: none; }
+  .lightbox.is-open { opacity: 1; }
+  .lightbox-figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    transform: scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: default;
+  }
+  .lightbox.is-open .lightbox-figure { transform: scale(1); }
+  .lightbox-figure img,
+  .lightbox-figure video {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(94vw, 1600px);
+    max-height: calc(100vh - 9rem);
+    border-radius: 2px;
+    background: #1a1a1a;
+    box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6), 0 8px 24px -8px rgba(0, 0, 0, 0.4);
+  }
+  @supports (height: 100dvh) {
+    .lightbox-figure img,
+    .lightbox-figure video { max-height: calc(100dvh - 9rem); }
+  }
+  .lightbox-caption {
+    max-width: min(94vw, 40rem);
+    text-align: center;
+    font-style: italic;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: rgba(250, 247, 242, 0.9);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: max(1rem, env(safe-area-inset-top));
+    right: max(1rem, env(safe-area-inset-right));
+    width: 2.75rem; height: 2.75rem;
+    display: grid;
+    place-items: center;
+    border-radius: 9999px;
+    border: 1px solid rgba(250, 247, 242, 0.35);
+    background: rgba(250, 247, 242, 0.1);
+    color: #faf7f2;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .lightbox-close:hover { background: rgba(250, 247, 242, 0.22); }
+  .lightbox-close:active { transform: scale(0.94); }
+  .lightbox-close:focus-visible { outline: 2px solid #f59e0b; outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) {
+    .lightbox, .lightbox-figure, .lightbox-close, .play-badge { transition: none; }
+    .lightbox-figure { transform: none; }
+    .video-item:hover .play-badge { transform: none; }
+  }
+
   .reveal {
     opacity: 0;
     transform: translateY(14px);
@@ -164,6 +267,16 @@
   </div>
 </footer>
 
+<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Forstørret visning" hidden>
+  <button type="button" class="lightbox-close" aria-label="Luk">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+  </button>
+  <figure class="lightbox-figure">
+    <div id="lightbox-media"></div>
+    <figcaption id="lightbox-caption" class="lightbox-caption" hidden></figcaption>
+  </figure>
+</div>
+
 <script>
   // Billed-/videoliste: tilføj ét objekt pr. fil, når nye lægges i galleri/-mappen.
   // Sæt type: "video" for .mp4/.mov/.webm-filer, ellers behandles posten som billede.
@@ -193,26 +306,128 @@
   const grid = document.getElementById('photo-grid');
   const empty = document.getElementById('empty-state');
 
+  // Forstørret visning: billedet/videoen vises i sine egne proportioner (uden beskæring),
+  // og baggrunden bag bliver mørkere. Luk med Esc, klik udenfor eller krydset.
+  const lightbox = document.getElementById('lightbox');
+  const lightboxMedia = document.getElementById('lightbox-media');
+  const lightboxCaption = document.getElementById('lightbox-caption');
+  const lightboxClose = lightbox.querySelector('.lightbox-close');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let lastTrigger = null;
+  let closeTimer = null;
+
+  const openLightbox = (p, trigger) => {
+    clearTimeout(closeTimer);
+    lastTrigger = trigger;
+    lightboxMedia.replaceChildren();
+
+    if (p.type === 'video') {
+      const video = document.createElement('video');
+      video.src = p.src;
+      video.controls = true;
+      video.playsInline = true;
+      video.autoplay = true;
+      lightboxMedia.appendChild(video);
+      video.play()?.catch(() => {});
+    } else {
+      const img = document.createElement('img');
+      img.src = p.src;
+      img.alt = p.alt || '';
+      lightboxMedia.appendChild(img);
+    }
+
+    lightboxCaption.textContent = p.caption || '';
+    lightboxCaption.hidden = !p.caption;
+    lightbox.hidden = false;
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(() => lightbox.classList.add('is-open'));
+    lightboxClose.focus();
+  };
+
+  const closeLightbox = () => {
+    if (lightbox.hidden) return;
+    lightboxMedia.querySelector('video')?.pause();
+    lightbox.classList.remove('is-open');
+    const finish = () => {
+      lightbox.hidden = true;
+      lightboxMedia.querySelectorAll('video').forEach((v) => { v.removeAttribute('src'); v.load(); });
+      lightboxMedia.replaceChildren();
+      document.body.style.overflow = '';
+      lastTrigger?.focus({ preventScroll: true });
+    };
+    if (reducedMotion.matches) finish();
+    else closeTimer = setTimeout(finish, 240);
+  };
+
+  lightbox.addEventListener('click', (e) => {
+    if (!e.target.closest('#lightbox-media, #lightbox-caption')) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (lightbox.hidden) return;
+    if (e.key === 'Escape') {
+      closeLightbox();
+    } else if (e.key === 'Tab') {
+      // Hold tastaturfokus inde i visningen (krydset + evt. videokontroller).
+      const focusable = [...lightbox.querySelectorAll('button, video[controls]')];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
   if (photos.length === 0) {
     grid.classList.add('hidden');
     empty.classList.remove('hidden');
   } else {
+    // Klik på et felt åbner den forstørrede visning (se openLightbox nedenfor).
     photos.forEach((p) => {
       const fig = document.createElement('figure');
+      const open = document.createElement('button');
+      open.type = 'button';
+      open.className = 'tile-open';
+      open.addEventListener('click', () => openLightbox(p, open));
+
       if (p.type === 'video') {
         fig.className = 'reveal';
-        fig.innerHTML = `
-          <div class="video-item">
-            <video src="${p.src}" controls playsinline preload="metadata"></video>
-          </div>
-        `;
+        const box = document.createElement('div');
+        box.className = 'video-item';
+
+        const video = document.createElement('video');
+        video.src = `${p.src}#t=0.1`; // viser et billede fra videoen som forsidebillede
+        video.muted = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        video.tabIndex = -1;
+        video.setAttribute('aria-hidden', 'true');
+
+        const badge = document.createElement('span');
+        badge.className = 'play-badge';
+        badge.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a.6.6 0 0 0 .92.5l10.2-6.5a.6.6 0 0 0 0-1L8.92 5a.6.6 0 0 0-.92.5Z"/></svg>';
+
+        open.setAttribute('aria-label', 'Afspil video');
+        box.append(video, badge, open);
+        fig.appendChild(box);
       } else {
         fig.className = 'photo reveal';
-        fig.innerHTML = `
-          <img src="${p.src}" alt="${p.alt || ''}" loading="lazy" style="${p.position ? `object-position: ${p.position};` : ''}" />
-          <div class="photo-overlay"></div>
-          ${p.caption ? `<figcaption class="photo-caption text-xs uppercase tracking-widest">${p.caption}</figcaption>` : ''}
-        `;
+        const img = document.createElement('img');
+        img.src = p.src;
+        img.alt = p.alt || '';
+        img.loading = 'lazy';
+        if (p.position) img.style.objectPosition = p.position;
+
+        const shade = document.createElement('div');
+        shade.className = 'photo-overlay';
+
+        fig.append(img, shade);
+        if (p.caption) {
+          const cap = document.createElement('figcaption');
+          cap.className = 'photo-caption text-xs uppercase tracking-widest';
+          cap.textContent = p.caption;
+          fig.appendChild(cap);
+        }
+        open.setAttribute('aria-label', `Forstør billede: ${p.caption || p.alt || ''}`.trim());
+        fig.appendChild(open);
       }
       grid.appendChild(fig);
     });
