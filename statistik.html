@@ -65,8 +65,8 @@
   #ranking summary:hover .book-title { color: #b45309; }
   #ranking summary:active { opacity: 0.7; }
   #ranking .score-num { font-variant-numeric: lining-nums; }
-  #ranking .score-num svg { transform: translateY(2px); }
-  #ranking .chev { transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
+  #ranking .score-num svg { transform: translateY(1px); }
+  #ranking .chev { position: relative; top: 1px; transition: transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1); }
   #ranking details[open] .chev { transform: rotate(180deg); }
   @media (prefers-reduced-motion: reduce) {
     #ranking .chev { transition: none; }
@@ -251,8 +251,10 @@
       avgNum.appendChild(el('span', 'font-body text-sm font-normal text-foreground-muted ml-1', '/ 5'));
       avgLine.appendChild(avgNum);
       score.appendChild(avgLine);
-      head.appendChild(score);
-      head.appendChild(chevron());
+      const trailing = el('div', 'flex items-center gap-4 flex-shrink-0 self-center');
+      trailing.appendChild(score);
+      trailing.appendChild(chevron());
+      head.appendChild(trailing);
 
       const details = document.createElement('details');
       details.appendChild(head);
