@@ -324,7 +324,10 @@
         outOf.textContent = '/ 5';
         num.appendChild(outOf);
         badge.lastChild.replaceWith(num);
-        badge.querySelector('svg').style.transform = 'translateY(2px)';
+        const star = badge.querySelector('svg');
+        star.setAttribute('width', '18');
+        star.setAttribute('height', '18');
+        star.style.transform = 'translateY(1px)';
         badge.title = `Bogklubbens gennemsnit: ${text} af 5`;
       });
     } catch (err) {

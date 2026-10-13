@@ -18,6 +18,12 @@
       "forfatter": "George Orwell",
       "sider": 128,
       "bedoemmelser": { "Gustav": 3, "Julius": 3, "Adam": 3, "Frederik": 4, "Jakob": 4, "Mathias": 3, "Oliver": 4, "Philip": 4 }
+    },
+    {
+      "titel": "Man's Search for Meaning",
+      "forfatter": "Viktor Frankl",
+      "sider": 154,
+      "bedoemmelser": { "Adam": 3.5, "Frederik": 3, "Oliver": 3 }
     }
   ]
 }
