@@ -279,10 +279,10 @@
       const rated = book.avg !== null;
 
       const head = el(rated ? 'summary' : 'div',
-        'flex items-baseline gap-4 py-4' + (rated
+        'flex items-baseline gap-2 sm:gap-4 py-4' + (rated
           ? ' cursor-pointer rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent'
           : ''));
-      head.appendChild(el('span', 'font-heading text-2xl w-7 flex-shrink-0 ' + (rated ? 'text-accent' : 'text-border-dark'), rated ? String(rank) : '–'));
+      head.appendChild(el('span', 'font-heading text-2xl w-6 sm:w-7 flex-shrink-0 ' + (rated ? 'text-accent' : 'text-border-dark'), rated ? String(rank) : '–'));
 
       const info = el('div', 'min-w-0 flex-1');
       info.appendChild(el('p', 'book-title text-lg leading-snug transition-colors sm:pr-12', book.titel));
@@ -297,14 +297,14 @@
 
       const score = el('div', 'text-right flex-shrink-0');
       score.appendChild(scoreLine(book.avg, 'justify-end'));
-      const trailing = el('div', 'flex items-center gap-4 flex-shrink-0 self-center');
+      const trailing = el('div', 'flex items-center gap-2 sm:gap-4 flex-shrink-0 self-center');
       trailing.appendChild(score);
       trailing.appendChild(chevron());
       head.appendChild(trailing);
 
       const details = document.createElement('details');
       details.appendChild(head);
-      const ratings = el('div', 'pl-11');
+      const ratings = el('div', 'pl-8 sm:pl-11');
       ratings.appendChild(memberRatings(book, members));
       details.appendChild(ratings);
 
@@ -355,6 +355,16 @@
         list.appendChild(bookRow(book, rank, members));
       });
       unrated.forEach((book) => list.appendChild(bookRow(book, null, members)));
+      // Et kort første ord (fx "Den") holdes sammen med det næste, så det ikke står alene på første linje på mobil —
+      // medmindre skærmen er for smal til de to ord, så titlen ellers ville flyde ud over scoren.
+      const fitTitles = () => list.querySelectorAll('.book-title').forEach((title) => {
+        title.dataset.full ??= title.textContent;
+        title.textContent = title.dataset.full.replace(/^(\S{1,3}) /, '$1\u00a0');
+        if (title.scrollWidth > title.clientWidth) title.textContent = title.dataset.full;
+      });
+      // Måles igen hver gang en titel skifter størrelse: når Lora og Tailwinds klasser er indlæst, og når skærmen drejes.
+      const observer = new ResizeObserver(fitTitles);
+      list.querySelectorAll('.book-title').forEach((title) => observer.observe(title));
       renderStats(books);
     } catch (err) {
       console.error(err);
