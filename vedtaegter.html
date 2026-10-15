@@ -139,6 +139,15 @@
     padding-top: 0.6rem;
     font-size: 0.9rem;
   }
+  /* Underskrifterne er klippet ud af den underskrevne papirudgave; billedets nederste kant skubbes ned,
+     så stregen i håndskriften flugter med linjen, og blækket ligger oven på navnet som på papiret. */
+  .sig-ink {
+    position: relative;
+    z-index: 1;
+    display: block;
+    max-width: none;
+    pointer-events: none;
+  }
 
   .reveal {
     opacity: 0;
@@ -319,15 +328,39 @@
     Vedtaget på foreningens ekstraordinære generalforsamling den 7. marts 2026.
   </p>
 
-  <div class="reveal grid sm:grid-cols-2 gap-x-12 gap-y-10 mt-16 max-w-xl mx-auto">
-    <div class="sig-line">Gustav Laigaard</div>
-    <div class="sig-line">Julius Skovgaard</div>
-    <div class="sig-line">Adam Helsted</div>
-    <div class="sig-line">Frederik Secher</div>
-    <div class="sig-line">Jakob Lobedanz Witthøfft</div>
-    <div class="sig-line">Mathias Anker Heegaard</div>
-    <div class="sig-line">Oliver Björkroth</div>
-    <div class="sig-line">Philip Blinkenberg Koch</div>
+  <div class="reveal grid sm:grid-cols-2 items-end gap-x-12 gap-y-10 mt-16 max-w-xl mx-auto">
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/gustav.png" alt="Underskrift: Gustav Laigaard" width="150" height="55" style="margin-left:-5px; margin-bottom:-12px">
+      <div class="sig-line">Gustav Laigaard</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/julius.png" alt="Underskrift: Julius Skovgaard" width="278" height="53" style="margin-left:3px; margin-bottom:-6px">
+      <div class="sig-line">Julius Skovgaard</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/adam.png" alt="Underskrift: Adam Helsted (Gustav på vegne af Adam)" width="188" height="113" style="margin-left:-10px; margin-bottom:-71px">
+      <div class="sig-line">Adam Helsted</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/frederik.png" alt="Underskrift: Frederik Secher" width="115" height="52" style="margin-left:-2px; margin-bottom:-3px">
+      <div class="sig-line">Frederik Secher</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/jakob.png" alt="Underskrift: Jakob Lobedanz Witthøfft" width="125" height="45" style="margin-left:4px; margin-bottom:-3px">
+      <div class="sig-line">Jakob Lobedanz Witthøfft</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/mathias.png" alt="Underskrift: Mathias Anker Heegaard" width="182" height="70" style="margin-left:-4px; margin-bottom:-9px">
+      <div class="sig-line">Mathias Anker Heegaard</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/oliver.png" alt="Underskrift: Oliver Björkroth" width="115" height="60" style="margin-left:8px; margin-bottom:-10px">
+      <div class="sig-line">Oliver Björkroth</div>
+    </div>
+    <div class="sig">
+      <img class="sig-ink" src="underskrifter/philip.png" alt="Underskrift: Philip Blinkenberg Koch" width="153" height="68" style="margin-left:-4px; margin-bottom:-21px">
+      <div class="sig-line">Philip Blinkenberg Koch</div>
+    </div>
   </div>
 </main>
 
