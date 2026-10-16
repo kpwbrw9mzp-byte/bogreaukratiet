@@ -190,8 +190,12 @@
         const id = `star-part-${++gradientId}`;
         const grad = document.createElementNS(SVG_NS, 'linearGradient');
         grad.setAttribute('id', id);
-        // Stjernens synlige bredde går fra x=2 til x=22 i viewBox'en.
-        const offset = `${(2 + amount * 20) / 24 * 100}%`;
+        // Delingen følger stjernens areal, ikke dens bredde: fx dækker 3/4 af arealet allerede ved x=14,9 (af 2–22
+        // i viewBox'en), så kanten lander inde i stjernen i stedet for helt ude i spidsen, hvor den flyder sammen med omridset.
+        const AREA = [[0, 2], [0.25, 9.15], [0.5, 12], [0.75, 14.9], [1, 22]];
+        const i = AREA.findIndex(([f]) => f >= amount);
+        const [[f0, x0], [f1, x1]] = [AREA[i - 1], AREA[i]];
+        const offset = `${(x0 + (amount - f0) / (f1 - f0) * (x1 - x0)) / 24 * 100}%`;
         [['#d97706', '1'], ['#d97706', '0']].forEach(([color, opacity], i) => {
           for (const at of i ? [offset, '100%'] : ['0%', offset]) {
             const stop = document.createElementNS(SVG_NS, 'stop');
