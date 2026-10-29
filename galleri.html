@@ -362,11 +362,11 @@
     { src: "galleri/02.jpg", alt: "Formanden præsenterer de underskrevne vedtægter", caption: "Formanden præsenterer de underskrevne vedtægter" },
     { src: "galleri/03.jpg", alt: "Ingen nazister i vores gader demonstration", caption: "Ingen nazister i vores gader demonstration" },
     { src: "galleri/04.jpg", alt: "Middag på Rio Bravo", caption: "Middag på Rio Bravo" },
-    { src: "galleri/05.mov", type: "video" },
+    { src: "galleri/05.mov", type: "video", caption: "Four legs good, two legs bad" },
     { src: "galleri/06.jpg", alt: "Middag på Frederik VI", caption: "Middag på Frederik VI" },
     { src: "galleri/07.jpg", alt: "Dragbanko", caption: "Dragbanko" },
     { src: "galleri/08.jpg", alt: "Dragbanko", caption: "Dragbanko" },
-    { src: "galleri/09.mov", type: "video" },
+    { src: "galleri/09.mov", type: "video", caption: "Frederik underholder salen" },
     { src: "galleri/10.jpg", alt: "Adam på alkoholfri druk i Malmö", caption: "Adam på alkoholfri druk i Malmö" },
     { src: "galleri/11.jpg", alt: "Drengene drikker dram", caption: "Drengene drikker dram", position: "25%" },
     { src: "galleri/12.jpg", alt: "Julius vasker overskægget", caption: "Julius vasker overskægget" },
@@ -546,8 +546,18 @@
         badge.className = 'play-badge';
         badge.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a.6.6 0 0 0 .92.5l10.2-6.5a.6.6 0 0 0 0-1L8.92 5a.6.6 0 0 0-.92.5Z"/></svg>';
 
-        open.setAttribute('aria-label', 'Afspil video');
-        box.append(video, badge, open);
+        box.append(video);
+        if (p.caption) {
+          const shade = document.createElement('div');
+          shade.className = 'photo-overlay';
+          // Et <p> og ikke <figcaption>, da teksten ligger inde i video-feltet og ikke direkte i <figure>.
+          const cap = document.createElement('p');
+          cap.className = 'photo-caption text-xs uppercase tracking-widest';
+          cap.textContent = p.caption;
+          box.append(shade, cap);
+        }
+        open.setAttribute('aria-label', `Afspil video: ${p.caption || ''}`.replace(/: $/, ''));
+        box.append(badge, open);
         fig.appendChild(box);
       } else {
         fig.className = 'photo reveal';
